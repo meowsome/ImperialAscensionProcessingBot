@@ -17,13 +17,17 @@ module.exports = {
             checkIfAlreadySubmitted(client, userId, function(result) {
                 if (!result) return message.author.send("You have submitted an application within the past six hours. Please wait before applying again.");
 
-                message.author.send("Your application has been submitted. I will send you a message if you are accepted. Thank you!");
+                checkIfAccepted(client, userId, function(result) {
+                    if (!result) return message.author.send("You have already been accepted.");
 
-                var date = moment().format("lll");
+                    message.author.send("Your application has been submitted. I will send you a message if you are accepted. Thank you!");
 
-                client.channels.cache.get(process.env.processingVoteChannel).send("Applicant Username: <@" + userId + ">\nDate: " + date + "\nDocument Link: " + message.content).then(function(message) {
-                    message.react(process.env.acceptEmoji);
-                    message.react(process.env.denyEmoji);
+                    var date = moment().format("lll");
+
+                    client.channels.cache.get(process.env.processingVoteChannel).send("Applicant Username: <@" + userId + ">\nDate: " + date + "\nDocument Link: " + message.content).then(function(message) {
+                        message.react(process.env.acceptEmoji);
+                        message.react(process.env.denyEmoji);
+                    });
                 });
             });
         });
@@ -44,20 +48,26 @@ function checkIfVerified(client, userId, callback) {
 // Check if the user already has an accepted/denied/pending application over a certain date
 function checkIfAlreadySubmitted(client, userId, callback) {
     var processingVoteChannel = client.channels.cache.get(process.env.processingVoteChannel);
-    var acceptedApplicantsChannel = client.channels.cache.get(process.env.acceptedApplicantsChannel);
     var deniedApplicantsChannel = client.channels.cache.get(process.env.deniedApplicantsChannel);
 
     processingVoteChannel.messages.fetch().then(function (messages) {
-        acceptedApplicantsChannel.messages.fetch().then(function (messages2) {
-            deniedApplicantsChannel.messages.fetch().then(function (messages3) {
-                messages = messages.concat(messages2).concat(messages3);
+        deniedApplicantsChannel.messages.fetch().then(function (messages2) {
+            messages = messages.concat(messages2);
 
-                // Find all messages sent less than 6 hours ago by the user
-                var userApplications = messages.filter(message => message.content.includes(userId) && moment().diff(moment(message.createdAt), 'hours') < 6);
+            // Find all messages sent less than 6 hours ago by the user
+            var userApplications = messages.filter(message => message.content.includes(userId) && moment().diff(moment(message.createdAt), 'hours') < 6);
 
-                // If no messages, then user is good to submit again
-                callback(userApplications.size == 0);
-            });
+            // If no messages, then user is good to submit again
+            callback(userApplications.size == 0);
         });
+    });
+}
+
+// Check if user was already accepted into the program
+function checkIfAccepted(client, userId, callback) {
+    var channel = client.channels.cache.get(process.env.acceptedApplicantsChannel);
+
+    channel.messages.fetch().then(function(messages) {
+        callback (messages.find(message => message.author.id == userId) ? true : false);
     });
 }
