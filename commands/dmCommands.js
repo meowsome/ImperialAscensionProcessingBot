@@ -9,16 +9,55 @@ module.exports = {
     },
 
     handleGoogleDocDM: function(client, message) {
-        if (!result) return message.author.send("You have not reacted to the message in <#" + process.env.instructionsChannel + ">. React to the message to make a submission.");
+        var userId = message.author.id;
 
-        message.author.send("Your application has been submitted. I will send you a message if you are accepted. Thank you!");
+        checkIfVerified(client, userId, function(result) {
+            if (!result) return message.author.send("You have not reacted to the message in <#" + process.env.instructionsChannel + ">. React to the message to make a submission.");
 
-        var username = message.author.id;
-        var date = moment().format("lll");
+            checkIfAlreadySubmitted(client, userId, function(result) {
+                if (!result) return message.author.send("You have submitted an application within the past six hours. Please wait before applying again.");
 
-        client.channels.cache.get(process.env.processingVoteChannel).send("Applicant Username: <@" + username + ">\nDate: " + date + "\nDocument Link: " + message.content).then(function(message) {
-            message.react(process.env.acceptEmoji);
-            message.react(process.env.denyEmoji);
+                message.author.send("Your application has been submitted. I will send you a message if you are accepted. Thank you!");
+
+                var date = moment().format("lll");
+
+                client.channels.cache.get(process.env.processingVoteChannel).send("Applicant Username: <@" + userId + ">\nDate: " + date + "\nDocument Link: " + message.content).then(function(message) {
+                    message.react(process.env.acceptEmoji);
+                    message.react(process.env.denyEmoji);
+                });
+            });
         });
     }
+}
+
+// Check if the user has reacted to the message in the instructions channel 
+function checkIfVerified(client, userId, callback) {
+    var channel = client.channels.cache.get(process.env.instructionsChannel);
+
+    channel.messages.fetch().then(function (messages) {
+        messages.first().reactions.resolve(process.env.welcomeEmoji).users.fetch().then(function (users) {
+            callback(users.find(user => user.id == userId) ? true : false)
+        });
+    });
+}
+
+// Check if the user already has an accepted/denied/pending application over a certain date
+function checkIfAlreadySubmitted(client, userId, callback) {
+    var processingVoteChannel = client.channels.cache.get(process.env.processingVoteChannel);
+    var acceptedApplicantsChannel = client.channels.cache.get(process.env.acceptedApplicantsChannel);
+    var deniedApplicantsChannel = client.channels.cache.get(process.env.deniedApplicantsChannel);
+
+    processingVoteChannel.messages.fetch().then(function (messages) {
+        acceptedApplicantsChannel.messages.fetch().then(function (messages2) {
+            deniedApplicantsChannel.messages.fetch().then(function (messages3) {
+                messages = messages.concat(messages2).concat(messages3);
+
+                // Find all messages sent less than 6 hours ago by the user
+                var userApplications = messages.filter(message => message.content.includes(userId) && moment().diff(moment(message.createdAt), 'hours') < 6);
+
+                // If no messages, then user is good to submit again
+                callback(userApplications.size == 0);
+            });
+        });
+    });
 }
