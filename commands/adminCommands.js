@@ -28,7 +28,6 @@ module.exports = {
 function sendAcceptanceToApplicant(client, message) {
     // Get the user ID from the message
     var userID = message.content.split("\n")[0].split(": ")[1].replace(/\D/g, "");
-    console.log(userID);
     var user = client.users.cache.find(u => u.id == userID);
         
     user.send("Congratulations on your acceptance into the Imperial Ascension Program.\n\nJoin the Arconian discord and leave the Applications discord.\n\nhttps://discord.com/invite/wpNyZ44\n\nFirstly, all Ascendants are required to read and understand the Arconian Codex [https://docs.google.com/document/d/1bG_b6xARoCD47a8VXzymfM-VZ4q2Jx6fYyUFf-sEX34/edit].\n\n**MAKE SURE TO PRIMARY THE GROUP WHEN YOU JOIN AS A STAGE 1.**\n\nNext, you should read the Stage 1 Guide.  This contains everything you need to do to advance to Stage 2.\nhttps://docs.google.com/document/d/1G90AdyT4R2WR6ZFdPbcWNJZXJEOsmaY8nl5liDI6iZk/edit\n\nLastly, it is also highly recommended that you look at this:\nhttps://imgur.com/a/QRcviBo - It is the callouts for our primary base: The Armageddon Shipyard");
