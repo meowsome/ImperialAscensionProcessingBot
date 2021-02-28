@@ -18,7 +18,7 @@ module.exports = {
                 if (!result) return message.author.send("You have submitted an application within the past six hours. Please wait before applying again.");
 
                 checkIfAccepted(client, userId, function(result) {
-                    if (!result) return message.author.send("You have already been accepted.");
+                    if (result) return message.author.send("You have already been accepted.");
 
                     message.author.send("Your application has been submitted. I will send you a message if you are accepted. Thank you!");
 
@@ -68,6 +68,6 @@ function checkIfAccepted(client, userId, callback) {
     var channel = client.channels.cache.get(process.env.acceptedApplicantsChannel);
 
     channel.messages.fetch().then(function(messages) {
-        callback (messages.find(message => message.author.id == userId) ? true : false);
+        callback (messages.find(message => message.content.includes(userId)) ? true : false);
     });
 }
