@@ -24,7 +24,7 @@ module.exports = {
 
                     var date = moment().format("lll");
 
-                    client.channels.cache.get(process.env.processingVoteChannel).send("Applicant Username: <@" + userId + ">\nDate: " + date + "\nDocument Link: " + message.content).then(function(message) {
+                    client.channels.cache.get(process.env.processingVoteChannel).send("Applicant Username: <@" + userId + ">\nDate: " + date + "\nDocument Link: " + message.content + "\n<@&" + process.env.applicationprocessorsRole + ">").then(function(message) {
                         message.react(process.env.acceptEmoji);
                         message.react(process.env.denyEmoji);
                     });
