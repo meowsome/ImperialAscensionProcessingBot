@@ -6,6 +6,7 @@ const adminCommands = require("./commands/adminCommands");
 const dmCommands = require("./commands/dmCommands");
 
 client.on("ready", function () {
+    console.log("Imperial Ascension Bot started");
     cacheOldMessages(client);
 });
 
@@ -72,12 +73,19 @@ process.on("unhandledRejection", function (err) {
 client.login(process.env.token);
 
 function cacheOldMessages() {
-    client.channels.cache.get(process.env.instructionsChannel).messages.fetch().then(async function (messages) {
-        client.channels.cache.get(process.env.processingVoteChannel).messages.fetch().then(async function (newMessages) {
-            // Get all messages sent by bot that have reactions on them
-            messages = messages.concat(newMessages).filter(message => message.author.id == client.user.id && message.reactions.cache.size > 0);
+    var instructionsChannel = client.channels.cache.get(process.env.instructionsChannel);
+    var processingVoteChannel = client.channels.cache.get(process.env.processingVoteChannel);
 
-            console.log(messages.size + " messages cached");
+    if (instructionsChannel && processingVoteChannel) {
+        instructionsChannel.messages.fetch().then(async function (messages) {
+            processingVoteChannel.messages.fetch().then(async function (newMessages) {
+                // Get all messages sent by bot that have reactions on them
+                messages = messages.concat(newMessages).filter(message => message.author.id == client.user.id && message.reactions.cache.size > 0);
+
+                console.log(messages.size + " messages cached");
+            });
         });
-    });
+    } else {
+        console.log("An error occurred caching old messages.");
+    }
 }
