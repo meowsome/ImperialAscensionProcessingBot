@@ -41,8 +41,10 @@ function checkIfVerified(client, userId, callback) {
 
     channel.messages.fetch().then(function (messages) {
         var message = functions.findBotImportantMessage(messages, client.user.id).first();
-        
-        message.reactions.resolve(process.env.welcomeEmoji).users.fetch().then(function (users) {
+        var emoji = functions.getServerEmoji(message.guild.emojis, process.env.welcomeEmoji).id;
+
+        // Check if user has accepted terms by reacting to welcome message
+        message.reactions.resolve(emoji).users.fetch().then(function (users) {
             callback(users.find(user => user.id == userId) ? true : false)
         });
     });
