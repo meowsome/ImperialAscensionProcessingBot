@@ -45,7 +45,7 @@ function checkIfVerified(client, userId, callback) {
 
         // Check if user has accepted terms by reacting to welcome message
         message.reactions.resolve(emoji).users.fetch().then(function (users) {
-            callback(users.find(user => user.id == userId) ? true : false)
+            callback(users.some(user => user.id == userId));
         });
     });
 }
@@ -73,6 +73,6 @@ function checkIfAccepted(client, userId, callback) {
     var channel = client.channels.cache.get(process.env.acceptedApplicantsChannel);
 
     channel.messages.fetch().then(function(messages) {
-        callback (messages.find(message => message.content.includes(userId)) ? true : false);
+        callback (messages.some(message => message.content.includes(userId)));
     });
 }
