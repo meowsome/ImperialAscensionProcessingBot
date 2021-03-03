@@ -10,8 +10,8 @@ module.exports = {
     },
 
     handleApplication: function(client, reaction, user) {
-        // Fail if invalid perms OR if emoji is not dedicated accept/deny emojis
-        if (!validatePermissionsProcessors(user) || (reaction.emoji.name != process.env.acceptEmoji && reaction.emoji.name != process.env.denyEmoji)) return;
+        // Fail if invalid perms (neither admin or processor role) OR if emoji is not dedicated accept/deny emojis
+        if ((!validatePermissionsProcessors(user) && !validatePermissionsAdmin(user)) || (reaction.emoji.name != process.env.acceptEmoji && reaction.emoji.name != process.env.denyEmoji)) return;
 
         var success = reaction.emoji.name == process.env.acceptEmoji;
         var channel = success ? process.env.acceptedApplicantsChannel : process.env.deniedApplicantsChannel;
