@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const adminCommands = require("./commands/adminCommands");
 const dmCommands = require("./commands/dmCommands");
+const functions = require("./commands/functions");
 
 client.on("ready", function () {
     console.log("Imperial Ascension Bot started");
@@ -80,7 +81,7 @@ function cacheOldMessages() {
         instructionsChannel.messages.fetch().then(async function (messages) {
             processingVoteChannel.messages.fetch().then(async function (newMessages) {
                 // Get all messages sent by bot that have reactions on them
-                messages = messages.concat(newMessages).filter(message => message.author.id == client.user.id && message.reactions.cache.size > 0);
+                messages = functions.findBotImportantMessage(messages.concat(newMessages), client.user.id);
 
                 console.log(messages.size + " messages cached");
             });

@@ -1,4 +1,5 @@
 const moment = require("moment");
+const functions = require("./functions");
 
 module.exports = {
     sendInitialDmToUser: function(reaction, user) {
@@ -39,7 +40,9 @@ function checkIfVerified(client, userId, callback) {
     var channel = client.channels.cache.get(process.env.instructionsChannel);
 
     channel.messages.fetch().then(function (messages) {
-        messages.first().reactions.resolve(process.env.welcomeEmoji).users.fetch().then(function (users) {
+        var message = functions.findBotImportantMessage(messages, client.user.id).first();
+        
+        message.reactions.resolve(process.env.welcomeEmoji).users.fetch().then(function (users) {
             callback(users.find(user => user.id == userId) ? true : false)
         });
     });
