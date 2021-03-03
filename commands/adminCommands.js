@@ -1,8 +1,8 @@
 const functions = require('./functions');
 
 module.exports = {
-    resendWelcomeMessage: function(client, member) {
-        if (!validatePermissionsAdmin(member)) return;
+    resendWelcomeMessage: function(client, member, message) {
+        if (!validatePermissionsAdmin(member)) return message.channel.send("Insufficient permissions. You must be an admin to perform this command.");
 
         client.channels.cache.get(process.env.instructionsChannel).send("https://docs.google.com/document/d/16ZFiYO2aLMMTSP0eFejfj1kXdz3AtgmPqP7MUn38xAQ/edit?usp=sharing\n\nReact to proceed into the application submission channel.\n\n**Make sure you've read the Application document and follow the format, your application will be ignored if you do not apply properly.**").then(function(message) {
             message.react(functions.getServerEmoji(message.guild.emojis, process.env.welcomeEmoji));
@@ -10,9 +10,13 @@ module.exports = {
     },
 
     handleApplication: function(client, reaction, user) {
-        // Fail if invalid perms (neither admin or processor role) OR if emoji is not dedicated accept/deny emojis
-        if ((!validatePermissionsProcessors(user) && !validatePermissionsAdmin(user)) || (reaction.emoji.name != process.env.acceptEmoji && reaction.emoji.name != process.env.denyEmoji)) return;
+        // Fail if invalid perms (neither admin or processor role)
+        if ((!validatePermissionsProcessors(user) && !validatePermissionsAdmin(user))) return message.channel.send("Insufficient permissions. You must either have the Application Processors role or be an admin to perform this command.");
 
+        // Fail if emoji is not dedicated accept/deny emojis
+        if (reaction.emoji.name != process.env.acceptEmoji && reaction.emoji.name != process.env.denyEmoji) return;
+
+        // Determine which channel to send to
         var success = reaction.emoji.name == process.env.acceptEmoji;
         var channel = success ? process.env.acceptedApplicantsChannel : process.env.deniedApplicantsChannel;
     
@@ -21,7 +25,6 @@ module.exports = {
         
         // Delete message
         reaction.message.delete();
-        // client.channels.cache.get(process.env.processingVoteChannel).messages.fetch()
 
         if (success) sendAcceptanceToApplicant(client, reaction.message);
     }

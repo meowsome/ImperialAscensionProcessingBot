@@ -30,7 +30,7 @@ client.on("message", async function(message) {
 
         switch (command) {
             case "resendWelcomeMessage":
-                adminCommands.resendWelcomeMessage(client, message.member);
+                adminCommands.resendWelcomeMessage(client, message.member, message);
                 break;
         }
     }
