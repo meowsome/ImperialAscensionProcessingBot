@@ -1,9 +1,11 @@
+const functions = require('./functions');
+
 module.exports = {
     resendWelcomeMessage: function(client, member) {
         if (!validatePermissions(member)) return;
 
         client.channels.cache.get(process.env.instructionsChannel).send("https://docs.google.com/document/d/16ZFiYO2aLMMTSP0eFejfj1kXdz3AtgmPqP7MUn38xAQ/edit?usp=sharing\n\nReact to proceed into the application submission channel.\n\n**Make sure you've read the Application document and follow the format, your application will be ignored if you do not apply properly.**").then(function(message) {
-            message.react(process.env.welcomeEmoji);
+            message.react(functions.getServerEmoji(message.guild.emojis, process.env.welcomeEmoji));
         });
     },
 
