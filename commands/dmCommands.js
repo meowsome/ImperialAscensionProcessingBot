@@ -28,6 +28,7 @@ module.exports = {
                     client.channels.cache.get(process.env.processingVoteChannel).send("Applicant Username: <@" + userId + ">\nDate: " + date + "\nDocument Link: " + message.content + "\n<@&" + process.env.applicationprocessorsRole + ">").then(function(message) {
                         message.react(process.env.acceptEmoji);
                         message.react(process.env.denyEmoji);
+                        message.react(process.env.confirmEmoji);
                     });
                 });
             });
