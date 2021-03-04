@@ -4,7 +4,7 @@ module.exports = {
     resendWelcomeMessage: function(client, member, message) {
         if (!validatePermissionsAdmin(member)) return message.channel.send("Insufficient permissions. You must be an admin to perform this command.");
 
-        client.channels.cache.get(process.env.instructionsChannel).send("https://docs.google.com/document/d/16ZFiYO2aLMMTSP0eFejfj1kXdz3AtgmPqP7MUn38xAQ/edit?usp=sharing\n\nReact to proceed into the application submission channel.\n\n**Make sure you've read the Application document and follow the format, your application will be ignored if you do not apply properly.**").then(function(message) {
+        client.channels.cache.get(process.env.instructionsChannel).send("React to proceed into the application submission channel.\n\n**Make sure you've read the Application document and follow the format, your application will be ignored if you do not apply properly.**").then(function(message) {
             message.react(functions.getServerEmoji(message.guild.emojis, process.env.welcomeEmoji));
         });
     },
@@ -26,16 +26,19 @@ module.exports = {
         // Delete message
         reaction.message.delete();
 
-        if (success) sendAcceptanceToApplicant(client, reaction.message);
+        sendMessageToApplicant(client, reaction.message, success);
     }
 }
 
-function sendAcceptanceToApplicant(client, message) {
+function sendMessageToApplicant(client, message, success) {
     // Get the user ID from the message
     var userID = message.content.split("\n")[0].split(": ")[1].replace(/\D/g, "");
     var user = client.users.cache.find(u => u.id == userID);
+
+    // Create text for success or deny
+    var text = success ? "Congratulations on your acceptance into the Imperial Ascension Program.\n\nJoin the Arconian Discord and leave the Applications Discord.\n\nhttps://discord.com/invite/wpNyZ44\n\nFirstly, all Ascendants are required to read and understand the Arconian Codex [https://docs.google.com/document/d/1bG_b6xARoCD47a8VXzymfM-VZ4q2Jx6fYyUFf-sEX34/edit].\n\nMAKE SURE TO PRIMARY THE GROUP WHEN YOU JOIN AS A STAGE 1.\n\nNext, you should read the Stage 1 Guide. This contains everything you need to do to advance to Stage 2.\nhttps://docs.google.com/document/d/1G90AdyT4R2WR6ZFdPbcWNJZXJEOsmaY8nl5liDI6iZk/edit\n\nLastly, it is also highly recommended that you look at this:\nhttps://imgur.com/a/QRcviBo - It is the callouts for our primary base: The Armageddon Shipyard" : "You have been denied. Tou may re apply in 6 hours.";
         
-    user.send("Congratulations on your acceptance into the Imperial Ascension Program.\n\nJoin the Arconian discord and leave the Applications discord.\n\nhttps://discord.com/invite/wpNyZ44\n\nFirstly, all Ascendants are required to read and understand the Arconian Codex [https://docs.google.com/document/d/1bG_b6xARoCD47a8VXzymfM-VZ4q2Jx6fYyUFf-sEX34/edit].\n\n**MAKE SURE TO PRIMARY THE GROUP WHEN YOU JOIN AS A STAGE 1.**\n\nNext, you should read the Stage 1 Guide.  This contains everything you need to do to advance to Stage 2.\nhttps://docs.google.com/document/d/1G90AdyT4R2WR6ZFdPbcWNJZXJEOsmaY8nl5liDI6iZk/edit\n\nLastly, it is also highly recommended that you look at this:\nhttps://imgur.com/a/QRcviBo - It is the callouts for our primary base: The Armageddon Shipyard");
+    user.send(text);
 }
 
 function validatePermissionsAdmin(member) {

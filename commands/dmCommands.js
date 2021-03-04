@@ -6,7 +6,7 @@ module.exports = {
         //Validate reaction is correct emoji
         if (reaction.emoji.name != process.env.welcomeEmoji) return;
 
-        user.send("Create a copy of this Google Document, fill it out, and send the URL back to me. Please ensure that you allow all users with a link to view your document.\n\nYou only get 1 submission every 6 hours. If you mess up, you have to wait.\n\nApplication: https://docs.google.com/document/d/16ZFiYO2aLMMTSP0eFejfj1kXdz3AtgmPqP7MUn38xAQ/edit?usp=sharing");
+        user.send("Make a copy of this Google Document by selecting the file dropdown on the top left of the screen and click on Make a copy. Once you’ve done that fill out the application below.\nhttps://docs.google.com/document/d/16ZFiYO2aLMMTSP0eFejfj1kXdz3AtgmPqP7MUn38xAQ/edit?usp=sharing\n\nOnce you are done filling out the application make a sharable link and post that link here.\n\nYou are only allowed to send a message in that channel once every 6 hours, so if you mess up that format your application will be ignored.");
     },
 
     handleGoogleDocDM: function(client, message) {
