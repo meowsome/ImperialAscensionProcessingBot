@@ -18,8 +18,11 @@ module.exports = {
         
         var reactions = reaction.message.reactions;
 
-        // Fail if no votes
-        if (reactions.resolve(process.env.acceptEmoji).count == 1 && reactions.resolve(process.env.denyEmoji).count == 1) return reaction.users.remove(user);
+        // Calculate all acceptances and denials from the current application, subtract 2 to remove the bot's votes
+        var totalVotes = reactions.resolve(process.env.acceptEmoji).count + reactions.resolve(process.env.denyEmoji).count - 2;
+
+        // Only allow confirm reaction to work if 4 total votes. 
+        if (totalVotes < 2) return reaction.users.remove(user);
 
         // Determine which channel to send to
         var success = reactions.resolve(process.env.acceptEmoji).count >= reactions.resolve(process.env.denyEmoji).count;
