@@ -16,6 +16,7 @@ client.on("message", async function(message) {
     if (message.channel.type == "dm") {
         // If receive DM with google docs link...
         if (message.content.includes("docs.google.com")) dmCommands.handleGoogleDocDM(client, message);
+        else message.author.send("You must send a shareable Google Document link, try again.");
 
         return;
     }
