@@ -6,7 +6,7 @@ module.exports = {
         //Validate reaction is correct emoji
         if (reaction.emoji.name != process.env.welcomeEmoji) return;
 
-        user.send("1. Open the google document link below.\n2. Click on \"Make a copy\".\n3. Once you’ve done that fill out the application.\n4. Once you have completed your application, change the document's sharing settings on the top right to \"anyone with the link can view\", and send it back here.\n\nYou are only allowed to apply once every 6 hours, so if you mess up that format your application will be ignored.\n\nhttps://docs.google.com/document/d/16ZFiYO2aLMMTSP0eFejfj1kXdz3AtgmPqP7MUn38xAQ/copy");
+        user.send("1. Open the google document link below.\n2. Click on \"Make a copy\".\n3. Once you’ve done that fill out the application.\n4. Once you have completed your application, change the document's sharing settings on the top right to \"anyone with the link can view\", and send it back here.\n\nYou are only allowed to apply once every " + process.env.cooldownHours + " hours, so if you mess up that format your application will be ignored.\n\nhttps://docs.google.com/document/d/16ZFiYO2aLMMTSP0eFejfj1kXdz3AtgmPqP7MUn38xAQ/copy");
     },
 
     handleGoogleDocDM: function(client, message) {
@@ -16,7 +16,7 @@ module.exports = {
             if (!result) return message.author.send("You have not reacted to the message in <#" + process.env.instructionsChannel + ">. React to the message to make a submission.");
 
             checkIfAlreadySubmitted(client, userId, function(result) {
-                if (!result) return message.author.send("You have submitted an application within the past six hours. Please wait before applying again.");
+                if (!result) return message.author.send("You have submitted an application within the past " + process.env.cooldownHours + " hours. Please wait before applying again.");
 
                 checkIfAccepted(client, userId, function(result) {
                     if (result) return message.author.send("You have already been accepted.");
@@ -60,8 +60,8 @@ function checkIfAlreadySubmitted(client, userId, callback) {
         deniedApplicantsChannel.messages.fetch().then(function (messages2) {
             messages = messages.concat(messages2);
 
-            // Find all messages sent less than 6 hours ago by the user
-            var userApplications = messages.filter(message => message.content.includes(userId) && moment().diff(moment(message.createdAt), 'hours') < 6);
+            // Find all messages sent less than the # of cooldown hours ago by the user
+            var userApplications = messages.filter(message => message.content.includes(userId) && moment().diff(moment(message.createdAt), 'hours') < process.env.cooldownHours);
 
             // If no messages, then user is good to submit again
             callback(userApplications.size == 0);
