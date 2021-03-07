@@ -1,3 +1,4 @@
+const moment = require("moment");
 const functions = require('./functions');
 
 module.exports = {
@@ -28,8 +29,11 @@ module.exports = {
         var success = reactions.resolve(process.env.acceptEmoji).count >= reactions.resolve(process.env.denyEmoji).count;
         var channel = success ? process.env.acceptedApplicantsChannel : process.env.deniedApplicantsChannel;
     
-        // Send new message, remove the mention of the application processor role from the message
-        client.channels.cache.get(channel).send(reaction.message.content.replace("\n<@&" + process.env.applicationprocessorsRole + ">", ""));
+        // Send new message
+        var date = moment().format("lll");
+        // Remove the mention of the application processor role and replace the time with the current time
+        var messageParts = reaction.message.content.replace("\n<@&" + process.env.applicationprocessorsRole + ">", "").replace(/Date:.*?\n/, "Date: " + date + "\n", "");
+        client.channels.cache.get(channel).send(messageParts);
         
         // Delete message
         reaction.message.delete();
