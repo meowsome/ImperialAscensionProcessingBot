@@ -16,7 +16,7 @@ module.exports = {
             if (!result) return message.author.send("You have not reacted to the message in <#" + process.env.instructionsChannel + ">. React to the message to make a submission.");
 
             checkIfAlreadySubmitted(client, userId, function(result) {
-                if (!result) return message.author.send("You have submitted an application within the past " + process.env.cooldownHours + " hours. Please wait before applying again.");
+                if (!result) return message.author.send("You have to wait a full " + process.env.cooldownHours + " hours before you send another application.");
 
                 checkIfAccepted(client, userId, function(result) {
                     if (result) return message.author.send("You have already been accepted.");
