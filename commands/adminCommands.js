@@ -28,8 +28,8 @@ module.exports = {
         var success = reactions.resolve(process.env.acceptEmoji).count >= reactions.resolve(process.env.denyEmoji).count;
         var channel = success ? process.env.acceptedApplicantsChannel : process.env.deniedApplicantsChannel;
     
-        // Send new message, remove "document link" from string
-        client.channels.cache.get(channel).send(reaction.message.content.split("Document Link:")[0]);
+        // Send new message, remove the mention of the application processor role from the message
+        client.channels.cache.get(channel).send(reaction.message.content.replace("\n<@&" + process.env.applicationprocessorsRole + ">", ""));
         
         // Delete message
         reaction.message.delete();
