@@ -21,8 +21,8 @@ module.exports = {
         // Calculate all acceptances and denials from the current application, subtract 2 to remove the bot's votes
         var totalVotes = reactions.resolve(process.env.acceptEmoji).count + reactions.resolve(process.env.denyEmoji).count - 2;
 
-        // Only allow confirm reaction to work if 4 total votes. 
-        if (totalVotes < 2) return reaction.users.remove(user);
+        // Only allow confirm reaction to work if 5 total votes. 
+        if (totalVotes < 5) return reaction.users.remove(user);
 
         // Determine which channel to send to
         var success = reactions.resolve(process.env.acceptEmoji).count >= reactions.resolve(process.env.denyEmoji).count;
