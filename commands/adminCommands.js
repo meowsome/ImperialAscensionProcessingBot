@@ -34,7 +34,9 @@ module.exports = {
         var date = moment().format("lll");
         // Remove the mention of the application processor role and replace the time with the current time
         var messageParts = reaction.message.content.replace("\n<@&" + process.env.applicationprocessorsRole + ">", "").replace(/Date:.*?\n/, "Date: " + date + "\n", "") + actionMessage + "<@" + user.id + ">";
-        client.channels.cache.get(channel).send(messageParts);
+        client.channels.cache.get(channel).send(messageParts).then(function(message) {
+            message.suppressEmbeds(true);
+        });
         
         // Delete message
         reaction.message.delete();
