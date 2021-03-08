@@ -56,15 +56,15 @@ function checkIfAlreadySubmitted(client, userId, callback) {
     var processingVoteChannel = client.channels.cache.get(process.env.processingVoteChannel);
     var deniedApplicantsChannel = client.channels.cache.get(process.env.deniedApplicantsChannel);
 
-    processingVoteChannel.messages.fetch().then(function (messages) {
-        deniedApplicantsChannel.messages.fetch().then(function (messages2) {
+    functions.incrementalFetch(processingVoteChannel.messages, function(messages) {
+        functions.incrementalFetch(deniedApplicantsChannel.messages, function(messages2) {
             messages = messages.concat(messages2);
 
             // Find all messages sent less than the # of cooldown hours ago by the user
             var userApplications = messages.filter(message => message.content.includes(userId) && moment().diff(moment(message.createdAt), 'hours') < process.env.cooldownHours);
 
             // If no messages, then user is good to submit again
-            callback(userApplications.size == 0);
+            callback(userApplications.length == 0);
         });
     });
 }
@@ -73,7 +73,7 @@ function checkIfAlreadySubmitted(client, userId, callback) {
 function checkIfAccepted(client, userId, callback) {
     var channel = client.channels.cache.get(process.env.acceptedApplicantsChannel);
 
-    channel.messages.fetch().then(function(messages) {
+    functions.incrementalFetch(channel.messages, function(messages) {
         callback (messages.some(message => message.content.includes(userId)));
     });
 }

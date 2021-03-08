@@ -79,12 +79,12 @@ function cacheOldMessages() {
     var processingVoteChannel = client.channels.cache.get(process.env.processingVoteChannel);
 
     if (instructionsChannel && processingVoteChannel) {
-        instructionsChannel.messages.fetch().then(async function (messages) {
-            processingVoteChannel.messages.fetch().then(async function (newMessages) {
+        instructionsChannel.messages.fetch().then(function (messages) {
+            functions.incrementalFetch(processingVoteChannel.messages, function(newMessages) {
                 // Get all messages sent by bot that have reactions on them
-                messages = functions.findBotImportantMessage(messages.concat(newMessages), client.user.id);
+                messages = functions.findBotImportantMessage(messages.array().concat(newMessages), client.user.id);
 
-                console.log(messages.size + " messages cached");
+                console.log(messages.length + " messages cached");
             });
         });
     } else {
